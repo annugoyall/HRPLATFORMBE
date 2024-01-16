@@ -26,10 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-tpcfr)kd7hhf6buuh*wen+#9z3@i6@o%mt(jx-%$79sc=c+=em"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost']
 
 # Application definition
 
@@ -41,7 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "user",
-    "test_app"
+    "test_app",
 ]
 
 MIDDLEWARE = [
@@ -77,6 +76,7 @@ WSGI_APPLICATION = "HRPlatformBE.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
 
 DATABASES = {"default": env.db("DATABASE_URL", default="postgres:///fxtp")}
 
