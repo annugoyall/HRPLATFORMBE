@@ -17,3 +17,7 @@ class Department(models.Model):
 
     def __str__(self):
         return self.name
+
+class Candidate(models.Model):
+    id = models.AutoField()
+    resume = models.FileField()
