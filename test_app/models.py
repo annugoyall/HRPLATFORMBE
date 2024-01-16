@@ -11,8 +11,8 @@ class Test(models.Model):
     conduced_on = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey("user.Employee", on_delete=models.SET_NULL())
-    alloted_to = ArrayField(models.ForeignKey("user.Candidate"), blank=True, null=True)
+    # created_by = models.ForeignKey("user.Employee", on_delete=models.SET_NULL())
+    # alloted_to = ArrayField(models.ForeignKey("user.Candidate"), blank=True, null=True)
 
 
 class Question(models.Model):
@@ -27,8 +27,8 @@ class Question(models.Model):
 
 class TestResponse(models.Model):
     id = models.AutoField(primary_key=True)
-    candidate = models.ForeignKey("user.Candidate")
-    test = models.ForeignKey("Test")
-    question = models.ForeignKey("Question")
+    # candidate = models.ForeignKey("user.Candidate")
+    test = models.ForeignKey(Test, null=True, blank=True, on_delete=models.SET_NULL)
+    question = models.ForeignKey(Question, null=True, blank=True, on_delete=models.SET_NULL)
     answer = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
