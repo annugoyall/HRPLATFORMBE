@@ -7,6 +7,9 @@ name = "pypi"
 django = "*"
 django-environ = "*"
 psycopg2 = "*"
+fitz = "*"
+pymupdf = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
