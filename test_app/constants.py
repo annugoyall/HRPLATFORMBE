@@ -1,2 +1,2 @@
-TEST_STATUS_CHOICES=[('Pending','pending')]
-QUESTION_TYPE_CHOICES=[("Programming","programming")]
+TEST_STATUS_CHOICES = [("pending", "Pending"), ("created", "Created"), ("conducted", "Conducted")]
+QUESTION_TYPE_CHOICES = [("mcq", "MCQ"), ("subjective", "Subjective")]

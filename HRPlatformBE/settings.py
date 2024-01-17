@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-
 import environ
 
 env = environ.Env()
@@ -79,16 +78,7 @@ WSGI_APPLICATION = "HRPlatformBE.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-DATABASES = DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'hr_platform',
-        'USER': 'root',
-        'PASSWORD': 'asdf',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+DATABASES = {"default": env.db("DATABASE_URL", default="postgres:///fxtp")}
 
 
 
@@ -120,9 +110,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "staticfiles/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-# STATICFILES_DIRS = ["staticfiles",]
+STATIC_URL = "static/"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
