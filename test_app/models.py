@@ -23,7 +23,7 @@ class Test(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey("user.Employee", blank=True, null=True, on_delete=models.SET_NULL,
                                    related_name="created_by")
-    assigned_to = models.ForeignKey("user.Employee", blank=True, null=True, on_delete=models.SET_NULL,
+    assigned_to = models.ForeignKey("user.Department", blank=True, null=True, on_delete=models.SET_NULL,
                                     related_name="assigned_to")
 
 class TestResponse(models.Model):
