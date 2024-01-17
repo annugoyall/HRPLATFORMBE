@@ -37,17 +37,15 @@ def calculate_weighted_average(scores, weights):
 def DepartmentWiseAlignment(resume):
     filtered_keywords = GetKeywords(resume)
     department_weightage = {}
-    all_skillset_keywords = []
-
     departments = Department.objects.all()
 
-    # Iterate through departments and append their skillset keywords to the list
     for department_object in departments:
+        all_skillset_keywords = []
         department = department_object.name
         keywords = department_object.requirements
         all_skillset_keywords.append(' '.join(keywords))
         filtered_keywords_str = ' '.join(filtered_keywords)
-        department_weights = [1] * len(all_skillset_keywords)  # Equal weights for all departments
+        department_weights = [1] * len(all_skillset_keywords)
         vectorizer = TfidfVectorizer()
         tfidf_matrix = vectorizer.fit_transform([filtered_keywords_str] + all_skillset_keywords)
         similarity_scores = cosine_similarity(tfidf_matrix[0], tfidf_matrix[1:])
