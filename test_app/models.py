@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from .constants import TEST_STATUS_CHOICES, QUESTION_TYPE_CHOICES
 from django.contrib.postgres.fields import ArrayField

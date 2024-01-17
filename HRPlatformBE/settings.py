@@ -26,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-tpcfr)kd7hhf6buuh*wen+#9z3@i6@o%mt(jx-%$79sc=c+=em"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
 # Application definition
 
@@ -79,6 +79,7 @@ WSGI_APPLICATION = "HRPlatformBE.wsgi.application"
 
 
 DATABASES = {"default": env.db("DATABASE_URL", default="postgres:///fxtp")}
+
 
 
 # Password validation
