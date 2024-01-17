@@ -22,7 +22,7 @@ class Test(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey("user.Employee", blank=True, null=True, on_delete=models.SET_NULL)
-    assigned_to = models.ManyToManyField("user.Candidate", blank=True, related_name="assigned_to_candidates")
+    assigned_to = models.ManyToManyField("user.Employee", blank=True, related_name="assigned_to_candidates")
 
 class TestResponse(models.Model):
     id = models.AutoField(primary_key=True)

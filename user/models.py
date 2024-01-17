@@ -4,10 +4,6 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from test_app.models import Test
 
-
-# Create your models here.
-# Department, Employee, Candidate
-
 class Department(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
