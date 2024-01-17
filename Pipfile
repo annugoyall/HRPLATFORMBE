@@ -10,6 +10,7 @@ psycopg2 = "*"
 fitz = "*"
 pymupdf = "*"
 scikit-learn = "*"
+djangorestframework = "*"
 
 [dev-packages]
 

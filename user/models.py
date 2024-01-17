@@ -11,7 +11,8 @@ from test_app.models import Test
 class Department(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    head = models.ForeignKey('Employee', null=True, blank=True, on_delete=models.SET_NULL)
+    head = models.ForeignKey('Employee', null=True, blank=True, on_delete=models.SET_NULL,
+                             related_name="head_of_department")
     requirements = ArrayField(models.CharField(max_length=100), size=50)
 
     def __str__(self):
@@ -21,8 +22,8 @@ class Department(models.Model):
 class Employee(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    department = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL)
-
+    department = models.ForeignKey("Department", null=True, blank=True, on_delete=models.SET_NULL,
+                                   related_name="employee_department")
     def __str__(self):
         return self.name
 
@@ -37,7 +38,3 @@ class Candidate(models.Model):
 
     def __str__(self):
         return self.name
-
-class Candidate(models.Model):
-    id = models.AutoField()
-    resume = models.FileField()
