@@ -33,11 +33,8 @@ class TestViewSet(ModelViewSet):
             questions = request.data.get("questions")
             if test is not None:
                 if questions:
-                    if request.data.get("append"):
-                        existing_questions = list(test.questions.all())
-                        existing_questions = [question.id for question in existing_questions]
-                    else:
-                        existing_questions = []
+                    existing_questions = list(test.questions.all())
+                    existing_questions = [question.id for question in existing_questions]
                     combined_questions = existing_questions + questions
                     request.data["questions"] = combined_questions
 
