@@ -1,12 +1,17 @@
 import uuid
 
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+
 from test_app.models import Test
+
+
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db import models
 
 class Department(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
     head = models.ForeignKey('Employee', null=True, blank=True, on_delete=models.SET_NULL,
                              related_name="head_of_department")
     requirements = ArrayField(models.CharField(max_length=100), size=50)
@@ -38,3 +43,12 @@ class Candidate(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name
+
+class CustomUserManager(BaseUserManager):
+    use_in_migrations = True
+
+
+class User(AbstractUser):
+    password = models.CharField(max_length=128)
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    candidate = models.ForeignKey(Candidate, on_delete=models.SET_NULL, blank=True, null=True)

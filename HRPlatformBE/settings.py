@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "test_app",
     "django_filters"
 ]
+AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

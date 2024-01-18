@@ -1,18 +1,28 @@
 # views.py
+import json
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from django.http import HttpResponse,StreamingHttpResponse
 
 from test_app.models import Test
-from .models import Candidate, Department, Employee
-from .serializers import CandidateSerializer, DepartmentSerializer, EmployeeSerializer
+from .models import Candidate, Department, Employee, User
+from .serializers import CandidateSerializer, DepartmentSerializer, EmployeeSerializer, UserSerializer
 
 
 class CandidateAPIView(ModelViewSet):
     serializer_class = CandidateSerializer
     queryset = Candidate.objects.all()
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
 
+        # Include the photo file in the response
+        response_data = serializer.data
+        response_data['photo_url'] = request.build_absolute_uri(instance.resume.url)
+        print("URLLL",request.build_absolute_uri(instance.resume.url))
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
     def create(self, request):
         serializer = CandidateSerializer(data=request.data)
         if serializer.is_valid():
@@ -75,8 +85,6 @@ class DepartmentAPIView(ModelViewSet):
 class EmployeeAPIView(ModelViewSet):
     serializer_class = EmployeeSerializer
     queryset = Employee.objects.all()
-# create()`, `retrieve()`, `update()`,
-#     `partial_update()`, `destroy()` and `list()
 
     def create(self, request, *args, **kwargs):
         try:
@@ -107,3 +115,8 @@ class EmployeeAPIView(ModelViewSet):
             return Response(data={"Message":"Employee not found"}, status=status.HTTP_404_NOT_FOUND)
         employee_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserAPIView(ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
