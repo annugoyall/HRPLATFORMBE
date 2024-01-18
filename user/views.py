@@ -9,20 +9,18 @@ from django.http import HttpResponse,StreamingHttpResponse
 from test_app.models import Test
 from .models import Candidate, Department, Employee, User
 from .serializers import CandidateSerializer, DepartmentSerializer, EmployeeSerializer, UserSerializer
+from .models import Candidate, Department, Employee
+from .serializers import CandidateSerializer, DepartmentSerializer, EmployeeSerializer, EmployeeGetSerializer, DepartmentGetSerializer, CandidateGetSerializer
 
 
 class CandidateAPIView(ModelViewSet):
     serializer_class = CandidateSerializer
     queryset = Candidate.objects.all()
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
 
-        # Include the photo file in the response
-        response_data = serializer.data
-        response_data['photo_url'] = request.build_absolute_uri(instance.resume.url)
-        print("URLLL",request.build_absolute_uri(instance.resume.url))
-        return HttpResponse(json.dumps(response_data), content_type='application/json')
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CandidateGetSerializer
+
     def create(self, request):
         serializer = CandidateSerializer(data=request.data)
         if serializer.is_valid():
@@ -30,32 +28,36 @@ class CandidateAPIView(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        candidate = self.get_object(pk)
+    def update(self, request, *args, **kwargs):
+        candidate_id = kwargs.get("pk")
+        candidate = Candidate.objects.get(id=int(candidate_id))
         if not candidate:
             return Response(data={"Message": "Candidate not found"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = CandidateSerializer(candidate, data=request.data)
+        serializer = CandidateSerializer(candidate, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        candidate_obj = self.get_object(pk)
-        if candidate_obj:
-            candidate_obj.delete()
-            return Response(data={"MESSAGE": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(data={"MESSAGE": "Candidate not found"}, status=status.HTTP_204_NO_CONTENT)
+    # def delete(self, request, *args, **kwargs):
+    #     pk = kwargs.get('pk')
+    #     candidate_obj = self.get_object(pk)
+    #     if candidate_obj:
+    #         candidate_obj.delete()
+    #         return Response(data={"MESSAGE": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
+    #     else:
+    #         return Response(data={"MESSAGE": "Candidate not found"}, status=status.HTTP_204_NO_CONTENT)
 
 
 class DepartmentAPIView(ModelViewSet):
     serializer_class = DepartmentSerializer
     queryset = Department.objects.all()
 
-    def post(self, request):
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return DepartmentGetSerializer
+
+    def create(self, request):
         serializer = DepartmentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -63,31 +65,45 @@ class DepartmentAPIView(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, *args, **kwargs):
-        pk = request.GET.get('id')
-        department = self.get_object(pk)
+        department_id = kwargs.get("pk")
+        if not department_id:
+            return Response(data={"Message": "Department id is required"}, status=status.HTTP_404_NOT_FOUND)
+        department = Department.objects.get(id=department_id)
         if not department:
             return Response(data={"Message": "Department not found"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = DepartmentSerializer(department, data=request.data)
+        head_id = request.data.get("head")
+        if head_id:
+            head = Employee.objects.get(id=head_id).id
+            request.data["head"] = head
+        serializer = DepartmentSerializer(department, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        department_obj = self.get_object(pk)
-        if not department_obj:
-            return Response(data={"Message": "Department not found"}, status=status.HTTP_404_NOT_FOUND)
-        department_obj.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def delete(self, request, *args, **kwargs):
+    #     pk = kwargs.get('pk')
+    #     department_obj = self.get_object(pk)
+    #     if not department_obj:
+    #         return Response(data={"Message": "Department not found"}, status=status.HTTP_404_NOT_FOUND)
+    #     department_obj.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class EmployeeAPIView(ModelViewSet):
     serializer_class = EmployeeSerializer
     queryset = Employee.objects.all()
 
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return EmployeeGetSerializer
+
     def create(self, request, *args, **kwargs):
         try:
+            department_id = request.data.get("department")
+            if not department_id:
+                return Response(data={"Message": "Department id is required"}, status=status.HTTP_404_NOT_FOUND)
+            request.data["department"] = Department.objects.get(id=int(department_id)).id
             serializer = EmployeeSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -97,10 +113,13 @@ class EmployeeAPIView(ModelViewSet):
             return Response(data={"Message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
-        employee_id = kwargs.get('pk')
-        employee = self.get_object(employee_id)
-        if not employee:
+        employee_id = request.data.get("id")
+        if not employee_id:
             return Response(data={"Message": "Employee not found"}, status=status.HTTP_404_NOT_FOUND)
+        employee = Employee.objects.get(id=int(employee_id))
+        department_id = request.data.get("department")
+        if department_id:
+            request.data["department"] = Department.objects.get(id=int(department_id)).id
         serializer = EmployeeSerializer(employee, data=request.data, partial=True)
 
         if serializer.is_valid():
@@ -108,13 +127,13 @@ class EmployeeAPIView(ModelViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        employee_obj = self.get_object(pk)
-        if not employee_obj:
-            return Response(data={"Message":"Employee not found"}, status=status.HTTP_404_NOT_FOUND)
-        employee_obj.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def destroy(self, request, *args, **kwargs):
+    #     pk = kwargs.get('pk')
+    #     employee_obj = self.get_object(pk)
+    #     if not employee_obj:
+    #         return Response(data={"Message":"Employee not found"}, status=status.HTTP_404_NOT_FOUND)
+    #     employee_obj.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserAPIView(ModelViewSet):
