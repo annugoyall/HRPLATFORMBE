@@ -42,3 +42,5 @@ atlassian-ide-plugin.xml
 .idea/replstate.xml
 
 .env
+
+__pycache__/
