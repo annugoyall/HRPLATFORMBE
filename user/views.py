@@ -139,3 +139,18 @@ class EmployeeAPIView(ModelViewSet):
 class UserAPIView(ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        resp_data = serializer.data
+        candidate_name = resp_data['first_name']+resp_data['last_name']
+        candidate_obj = Candidate.objects.create(name=candidate_name)
+        candidate_obj.save()
+        user_obj = User.objects.get(id=resp_data['id'])
+        user_obj.candidate = candidate_obj
+        user_obj.save()
+        resp_data['candidate'] = candidate_obj.id
+        return Response(resp_data, status=status.HTTP_201_CREATED, headers=headers)

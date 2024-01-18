@@ -33,7 +33,7 @@ class Employee(models.Model):
 class Candidate(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    resume = models.FileField(upload_to='resume')
+    resume = models.FileField(upload_to='resume', blank=True, null=True)
     skill_set = ArrayField(models.CharField(max_length=100), blank=True, null=True)
     score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     alloted_test = models.ForeignKey(Test, on_delete=models.SET_NULL, blank=True, null=True)
