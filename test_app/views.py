@@ -66,7 +66,7 @@ class QuestionViewSet(ModelViewSet):
     def patch(self, request, *args, **kwargs):
         try:
             question_id = request.data.get("id")
-            question = Question.objects.get(pk=question_id)
+            question = Question.objects.get(pk=int(question_id))
             serializer = QuestionSerializer(question, data=request.data, partial=True)
 
             if serializer.is_valid():
@@ -93,21 +93,20 @@ class TestResponseViewSet(ModelViewSet):
     def patch(self, request, *args, **kwargs):
         try:
             candidate = request.data.get("candidate")
-            test = request.data.get("test")
             questions = request.data.get("question")
             correct_answers = 0
             for question in questions:
                 question_id = question.get("id")
                 answer = question.get("selectedOptionKey")
                 request.data["answer"] = answer
-                request.data["question"] = question_id
+                request.data["question"] = int(question_id)
                 serializer = TestResponseSerializer(data=request.data)
                 if serializer.is_valid():
                     serializer.save()
                 if Question.objects.get(pk=question_id).correct_answer == answer:
                     correct_answers += 1
             score = (correct_answers/len(questions))*100
-            candidate = Candidate.objects.get(pk=candidate)
+            candidate = Candidate.objects.get(id=int(candidate))
             candidate.score = score
             candidate.save()
             return Response("Test submitted successfully", status=status.HTTP_200_OK)
