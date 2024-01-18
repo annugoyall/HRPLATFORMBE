@@ -40,7 +40,7 @@ class TestViewSet(ModelViewSet):
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         try:
             serializer = TestSerializer(data=request.data)
 
@@ -85,7 +85,7 @@ class QuestionViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["question_type"]
 
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         serializer = QuestionSerializer(data=request.data)
 
         if serializer.is_valid():

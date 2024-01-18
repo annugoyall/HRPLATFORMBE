@@ -3,7 +3,6 @@ from user.models import Department
 from .constants import UnnecessaryKeywords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 import re
 from collections import Counter
 
@@ -22,8 +21,7 @@ def GetKeywords(resume):
     keywords = re.findall(r'\b\w+\b', parsed_keywords.lower())
     filtered_keywords = {keyword for keyword in keywords if keyword not in unnecessary_keywords}
     keyword_frequency = Counter(filtered_keywords)
-
-    return filtered_keywords
+    return keyword_frequency
 
 def normalize_weights(weights):
     total_weight = sum(weights.values())
