@@ -5,6 +5,7 @@ from test_app.models import Test
 class Department(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
     head = models.ForeignKey("Employee", null=True, blank=True, on_delete=models.SET_NULL,
                              related_name="head_of_department")
     requirements = ArrayField(models.CharField(max_length=100), size=50, blank=True, null=True)

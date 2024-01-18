@@ -17,6 +17,20 @@ class TestSerializer(serializers.ModelSerializer):
         model = Test
         fields = '__all__'
 
+class TestGetSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(required=False)
+    conduced_on = serializers.CharField(required=False)
+    created_at = serializers.CharField(required=False)
+    modified_at = serializers.CharField(required=False)
+    created_by = serializers.CharField(required=False)
+    assigned_to = serializers.CharField(required=False)
+    name = serializers.CharField(required=False)
+    description = serializers.CharField(required=False)
+
+    class Meta:
+        model = Test
+        fields = '__all__'
+
 class QuestionSerializer(serializers.ModelSerializer):
     id = serializers.CharField(required=False)
     created_at = serializers.CharField(required=False)

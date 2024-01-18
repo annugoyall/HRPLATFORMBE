@@ -1,3 +1,4 @@
+from rest_framework.decorators import action, api_view
 from rest_framework.views import APIView
 import logging
 from rest_framework.response import Response
@@ -6,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from test_app.models import Test, Question, TestResponse
 from user.models import Candidate
-from test_app.serializers import TestSerializer, QuestionSerializer, TestResponseSerializer
+from test_app.serializers import TestSerializer, QuestionSerializer, TestResponseSerializer, TestGetSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 
 logger = logging.getLogger(name="django")
@@ -15,6 +16,22 @@ class TestViewSet(ModelViewSet):
     queryset = Test.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["id", "created_by", "assigned_to", "status"]
+    @action(detail=False, methods=["GET"], url_path="get-test-by-id", url_name="get-test-by-id")
+    def get_test_by_id(self, request, *args, **kwargs):
+        try:
+            test_id = request.query_params.get("id")
+            if test_id:
+                test = Test.objects.get(id=test_id)
+                question_ids = list(test.questions.all())
+                question_ids = [question.id for question in question_ids]
+                test_serializer = TestSerializer(test)
+                questions = Question.objects.filter(id__in=question_ids)
+                question_serializer = QuestionSerializer(questions, many=True)
+                response = test_serializer.data
+                response["questions"] = question_serializer.data
+                return Response(response)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
         try:
