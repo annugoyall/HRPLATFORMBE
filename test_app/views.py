@@ -6,16 +6,23 @@ from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 
 from test_app.models import Test, Question, TestResponse
-from user.models import Candidate
+from user.models import Candidate, Department, Employee
 from test_app.serializers import TestSerializer, QuestionSerializer, TestResponseSerializer, TestGetSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 
 logger = logging.getLogger(name="django")
+
+
 class TestViewSet(ModelViewSet):
     serializer_class = TestSerializer
     queryset = Test.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["id", "created_by", "assigned_to", "status"]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TestGetSerializer
+
     @action(detail=False, methods=["GET"], url_path="get-test-by-id", url_name="get-test-by-id")
     def get_test_by_id(self, request, *args, **kwargs):
         try:
@@ -24,7 +31,7 @@ class TestViewSet(ModelViewSet):
                 test = Test.objects.get(id=test_id)
                 question_ids = list(test.questions.all())
                 question_ids = [question.id for question in question_ids]
-                test_serializer = TestSerializer(test)
+                test_serializer = TestGetSerializer(test)
                 questions = Question.objects.filter(id__in=question_ids)
                 question_serializer = QuestionSerializer(questions, many=True)
                 response = test_serializer.data
@@ -55,7 +62,12 @@ class TestViewSet(ModelViewSet):
                     existing_questions = [question.id for question in existing_questions]
                     combined_questions = existing_questions + questions
                     request.data["questions"] = combined_questions
-
+                if request.data.get("assigned_to"):
+                    assigned_to_id = request.data.get("assigned_to")
+                    request.data["assigned_to"] = Department.objects.get(id=int(assigned_to_id)).id
+                if request.data.get("created_at"):
+                    created_at_id = request.data.get("created_at")
+                    request.data["created_at"] = Employee.objects.get(id=int(created_at_id)).id
                 serializer = TestSerializer(test, data=request.data, partial=True)
 
                 if serializer.is_valid():
@@ -65,6 +77,7 @@ class TestViewSet(ModelViewSet):
 
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
 
 class QuestionViewSet(ModelViewSet):
     serializer_class = QuestionSerializer
@@ -122,7 +135,7 @@ class TestResponseViewSet(ModelViewSet):
                     serializer.save()
                 if Question.objects.get(pk=question_id).correct_answer == answer:
                     correct_answers += 1
-            score = (correct_answers/len(questions))*100
+            score = (correct_answers / len(questions)) * 100
             candidate = Candidate.objects.get(id=int(candidate))
             candidate.score = score
             candidate.save()
