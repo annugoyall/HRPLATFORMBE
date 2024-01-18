@@ -35,10 +35,22 @@ class DepartmentGetSerializer(serializers.ModelSerializer):
 
 class CandidateSerializer(serializers.ModelSerializer):
     id = serializers.CharField(required=False)
-    name = serializers.CharField()
-    resume = serializers.FileField()
+    name = serializers.CharField(required=False)
+    resume = serializers.FileField(required=False)
     skill_set = serializers.ListField(required=False)
     score = serializers.CharField(required=False)
+
+    class Meta:
+        model = Candidate
+        fields = '__all__'
+
+class CandidateGetSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(required=False)
+    name = serializers.CharField(required=False)
+    resume = serializers.FileField(required=False)
+    skill_set = serializers.ListField(required=False)
+    score = serializers.CharField(required=False)
+    alloted_test = serializers.CharField(required=False)
 
     class Meta:
         model = Candidate
