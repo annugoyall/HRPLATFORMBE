@@ -21,8 +21,10 @@ class Test(models.Model):
     conduced_on = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey("user.Employee", blank=True, null=True, on_delete=models.SET_NULL)
-    assigned_to = models.ManyToManyField("user.Employee", blank=True, related_name="assigned_to_candidates")
+    created_by = models.ForeignKey("user.Employee", blank=True, null=True, on_delete=models.SET_NULL,
+                                   related_name="created_by")
+    assigned_to = models.ForeignKey("user.Department", blank=True, null=True, on_delete=models.SET_NULL,
+                                    related_name="assigned_to")
 
 class TestResponse(models.Model):
     id = models.AutoField(primary_key=True)

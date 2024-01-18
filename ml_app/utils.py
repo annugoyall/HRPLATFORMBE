@@ -4,6 +4,8 @@ from .constants import UnnecessaryKeywords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import re
+from collections import Counter
 
 def ParseResume(resume):
     doc = fitz.open(resume)
@@ -17,8 +19,9 @@ def ParseResume(resume):
 def GetKeywords(resume):
     parsed_keywords = ParseResume(resume)
     unnecessary_keywords = UnnecessaryKeywords
-    keywords = parsed_keywords.split()
-    filtered_keywords = {keyword.lower() for keyword in keywords if keyword.lower() not in unnecessary_keywords}
+    keywords = re.findall(r'\b\w+\b', parsed_keywords.lower())
+    filtered_keywords = {keyword for keyword in keywords if keyword not in unnecessary_keywords}
+    keyword_frequency = Counter(filtered_keywords)
 
     return filtered_keywords
 
@@ -31,7 +34,9 @@ def normalize_weights(weights):
 
 
 def calculate_weighted_average(scores, weights):
-    return np.average(scores, weights=weights)
+    weighted_sum = sum(score * weight for score, weight in zip(scores, weights))
+    total_weight = sum(weights)
+    return (weighted_sum / total_weight)*10 if total_weight != 0 else 0
 
 
 def DepartmentWiseAlignment(resume):
@@ -50,7 +55,6 @@ def DepartmentWiseAlignment(resume):
         tfidf_matrix = vectorizer.fit_transform([filtered_keywords_str] + all_skillset_keywords)
         similarity_scores = cosine_similarity(tfidf_matrix[0], tfidf_matrix[1:])
         weighted_averages = [calculate_weighted_average(scores, department_weights) for scores in similarity_scores]
-        department_weightage[department] = weighted_averages[0]
+        department_weightage[department] = round(weighted_averages[0] * 100, 2)
 
-    return normalize_weights(department_weightage)
-
+    return department_weightage
