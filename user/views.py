@@ -6,12 +6,16 @@ from rest_framework.viewsets import ModelViewSet
 
 from test_app.models import Test
 from .models import Candidate, Department, Employee
-from .serializers import CandidateSerializer, DepartmentSerializer, EmployeeSerializer, EmployeeGetSerializer, DepartmentGetSerializer
+from .serializers import CandidateSerializer, DepartmentSerializer, EmployeeSerializer, EmployeeGetSerializer, DepartmentGetSerializer, CandidateGetSerializer
 
 
 class CandidateAPIView(ModelViewSet):
     serializer_class = CandidateSerializer
     queryset = Candidate.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CandidateGetSerializer
 
     def create(self, request):
         serializer = CandidateSerializer(data=request.data)
@@ -21,24 +25,24 @@ class CandidateAPIView(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        candidate = self.get_object(pk)
+        candidate_id = request.data.get("id")
+        candidate = Candidate.objects.get(id=int(candidate_id))
         if not candidate:
             return Response(data={"Message": "Candidate not found"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = CandidateSerializer(candidate, data=request.data)
+        serializer = CandidateSerializer(candidate, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        candidate_obj = self.get_object(pk)
-        if candidate_obj:
-            candidate_obj.delete()
-            return Response(data={"MESSAGE": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(data={"MESSAGE": "Candidate not found"}, status=status.HTTP_204_NO_CONTENT)
+    # def delete(self, request, *args, **kwargs):
+    #     pk = kwargs.get('pk')
+    #     candidate_obj = self.get_object(pk)
+    #     if candidate_obj:
+    #         candidate_obj.delete()
+    #         return Response(data={"MESSAGE": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
+    #     else:
+    #         return Response(data={"MESSAGE": "Candidate not found"}, status=status.HTTP_204_NO_CONTENT)
 
 
 class DepartmentAPIView(ModelViewSet):
@@ -49,7 +53,7 @@ class DepartmentAPIView(ModelViewSet):
         if self.request.method == 'GET':
             return DepartmentGetSerializer
 
-    def post(self, request):
+    def create(self, request):
         serializer = DepartmentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

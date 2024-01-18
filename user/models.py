@@ -11,7 +11,7 @@ class Department(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return self.name
+        return str(self.id)
 
 class Employee(models.Model):
     id = models.AutoField(primary_key=True)
@@ -21,7 +21,7 @@ class Employee(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return self.name
+        return str(self.id)
 
 
 class Candidate(models.Model):
@@ -34,4 +34,4 @@ class Candidate(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return self.name
+        return str(self.id)
