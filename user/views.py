@@ -26,6 +26,8 @@ class CandidateAPIView(APIView):
     def put(self, request):
         pk = request.GET.get('id')
         candidate = self.get_object(pk)
+        if not candidate:
+            return JsonResponse(data={"Message":"Candidate not found"},status=status.HTTP_404_NOT_FOUND)
         serializer = CandidateSerializer(candidate, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -64,8 +66,10 @@ class DepartmentAPIView(APIView):
 
     def put(self, request):
         pk = request.GET.get('id')
-        candidate = self.get_object(pk)
-        serializer = DepartmentSerializer(candidate, data=request.data)
+        department = self.get_object(pk)
+        if not department:
+            return JsonResponse(data={"Message":"Department not found"},status=status.HTTP_404_NOT_FOUND)
+        serializer = DepartmentSerializer(department, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
@@ -74,6 +78,8 @@ class DepartmentAPIView(APIView):
     def delete(self, request):
         pk = request.GET.get('id')
         department_obj = self.get_object(pk)
+        if not department_obj:
+            return JsonResponse(data={"Message":"Department not found"},status=status.HTTP_404_NOT_FOUND)
         department_obj.delete()
         return JsonResponse(status=status.HTTP_204_NO_CONTENT)
 
@@ -82,8 +88,7 @@ class DepartmentAPIView(APIView):
         try:
             return Department.objects.get(id=id)
         except Department.DoesNotExist:
-            raise JsonResponse(status=status.HTTP_404_NOT_FOUND)
-
+            return None
 
 
 
@@ -103,6 +108,8 @@ class EmployeeAPIView(APIView):
     def put(self, request):
         pk = request.GET.get('id')
         employee = self.get_object(pk)
+        if not employee:
+            return JsonResponse(data={"Message":"Employee not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = EmployeeSerializer(employee, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -112,6 +119,8 @@ class EmployeeAPIView(APIView):
     def delete(self, request):
         pk = request.GET.get('id')
         employee_obj = self.get_object(pk)
+        if not employee_obj:
+            return JsonResponse(data={"Message":"Employee not found"}, status=status.HTTP_404_NOT_FOUND)
         employee_obj.delete()
         return JsonResponse(status=status.HTTP_204_NO_CONTENT)
 
