@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 @csrf_exempt
-def parse_resume_view(request, candidate_id):
+def parse_resume_view(request):
     if request.method == 'GET':
         response = []
         candidates = Candidate.objects.all()

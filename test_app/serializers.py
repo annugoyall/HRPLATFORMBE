@@ -17,7 +17,6 @@ class TestSerializer(serializers.ModelSerializer):
         model = Test
         fields = '__all__'
 
-
 class QuestionSerializer(serializers.ModelSerializer):
     id = serializers.CharField(required=False)
     created_at = serializers.CharField(required=False)
@@ -28,11 +27,6 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class TestResponseSerializer(serializers.ModelSerializer):
-    id = serializers.CharField()
-    candidate = serializers.CharField()
-    test = serializers.CharField()
-    question = serializers.CharField()
-    created_at = serializers.CharField()
 
     class Meta:
         model = TestResponse
