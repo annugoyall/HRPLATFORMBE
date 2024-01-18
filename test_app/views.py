@@ -142,3 +142,18 @@ class TestResponseViewSet(ModelViewSet):
             return Response("Test submitted successfully", status=status.HTTP_200_OK)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
+class GetCandidateTestResponseView(APIView):
+    def get(self, request, *args, **kwargs):
+        candidate_id = self.kwargs.get("id")
+        test_responses = TestResponse.objects.filter(candidate=candidate_id).all()
+        output = []
+        for test_response in test_responses:
+            question_id = test_response.question
+            question = QuestionSerializer(question_id)
+            serialized_data = question.data
+            serialized_data["selected_answer"] = test_response.answer
+            output.append(serialized_data)
+        response = {"candidate_id": candidate_id, "data": output}
+
+        return Response(response, status=status.HTTP_200_OK)
