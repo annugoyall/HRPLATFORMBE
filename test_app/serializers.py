@@ -10,8 +10,6 @@ class TestSerializer(serializers.ModelSerializer):
     conduced_on = serializers.CharField(required=False)
     created_at = serializers.CharField(required=False)
     modified_at = serializers.CharField(required=False)
-    created_by = serializers.CharField(required=False)
-    assigned_to = serializers.CharField(required=False)
 
     class Meta:
         model = Test
