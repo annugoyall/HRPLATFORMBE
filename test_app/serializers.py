@@ -20,7 +20,7 @@ class TestSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     id = serializers.CharField()
-    created_at = serializers.CharField()
+    created_at = serializers.CharField(required=False)
 
     class Meta:
         model = Question

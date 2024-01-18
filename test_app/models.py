@@ -25,7 +25,8 @@ class Test(models.Model):
                                    related_name="created_by")
     assigned_to = models.ForeignKey("user.Department", blank=True, null=True, on_delete=models.SET_NULL,
                                     related_name="assigned_to")
-
+    def __str__(self):
+            return self.name
 class TestResponse(models.Model):
     id = models.AutoField(primary_key=True)
     candidate = models.ForeignKey("user.Candidate", blank=True, null=True, on_delete=models.SET_NULL)

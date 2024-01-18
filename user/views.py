@@ -1,11 +1,10 @@
 # views.py
 
-from uuid import UUID
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from test_app.models import Test
 from .models import Candidate, Department, Employee
 from .serializers import CandidateSerializer, DepartmentSerializer, EmployeeSerializer
 
@@ -14,7 +13,7 @@ class CandidateAPIView(ModelViewSet):
     serializer_class = CandidateSerializer
     queryset = Candidate.objects.all()
 
-    def post(self, request):
+    def create(self, request):
         serializer = CandidateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -25,7 +24,7 @@ class CandidateAPIView(ModelViewSet):
         pk = kwargs.get('pk')
         candidate = self.get_object(pk)
         if not candidate:
-            return Response(data={"Message":"Candidate not found"},status=status.HTTP_404_NOT_FOUND)
+            return Response(data={"Message": "Candidate not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = CandidateSerializer(candidate, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -40,7 +39,6 @@ class CandidateAPIView(ModelViewSet):
             return Response(data={"MESSAGE": "Successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(data={"MESSAGE": "Candidate not found"}, status=status.HTTP_204_NO_CONTENT)
-
 
 
 class DepartmentAPIView(ModelViewSet):
@@ -58,7 +56,7 @@ class DepartmentAPIView(ModelViewSet):
         pk = request.GET.get('id')
         department = self.get_object(pk)
         if not department:
-            return Response(data={"Message":"Department not found"},status=status.HTTP_404_NOT_FOUND)
+            return Response(data={"Message": "Department not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = DepartmentSerializer(department, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -69,7 +67,7 @@ class DepartmentAPIView(ModelViewSet):
         pk = kwargs.get('pk')
         department_obj = self.get_object(pk)
         if not department_obj:
-            return Response(data={"Message":"Department not found"},status=status.HTTP_404_NOT_FOUND)
+            return Response(data={"Message": "Department not found"}, status=status.HTTP_404_NOT_FOUND)
         department_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -77,8 +75,10 @@ class DepartmentAPIView(ModelViewSet):
 class EmployeeAPIView(ModelViewSet):
     serializer_class = EmployeeSerializer
     queryset = Employee.objects.all()
+# create()`, `retrieve()`, `update()`,
+#     `partial_update()`, `destroy()` and `list()
 
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         try:
             serializer = EmployeeSerializer(data=request.data)
             if serializer.is_valid():
@@ -86,21 +86,21 @@ class EmployeeAPIView(ModelViewSet):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response(data={"Message":str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"Message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
-    def patch(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
         employee_id = kwargs.get('pk')
         employee = self.get_object(employee_id)
         if not employee:
-            return Response(data={"Message":"Employee not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(data={"Message": "Employee not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = EmployeeSerializer(employee, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, *args, **kwargs):
+
+    def destroy(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
         employee_obj = self.get_object(pk)
         if not employee_obj:
