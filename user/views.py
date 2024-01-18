@@ -1,10 +1,14 @@
 # views.py
+import json
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from django.http import HttpResponse,StreamingHttpResponse
 
 from test_app.models import Test
+from .models import Candidate, Department, Employee, User
+from .serializers import CandidateSerializer, DepartmentSerializer, EmployeeSerializer, UserSerializer
 from .models import Candidate, Department, Employee
 from .serializers import CandidateSerializer, DepartmentSerializer, EmployeeSerializer, EmployeeGetSerializer, DepartmentGetSerializer, CandidateGetSerializer
 
@@ -60,7 +64,7 @@ class DepartmentAPIView(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         department_id = kwargs.get("pk")
         if not department_id:
             return Response(data={"Message": "Department id is required"}, status=status.HTTP_404_NOT_FOUND)
@@ -99,7 +103,7 @@ class EmployeeAPIView(ModelViewSet):
             department_id = request.data.get("department")
             if not department_id:
                 return Response(data={"Message": "Department id is required"}, status=status.HTTP_404_NOT_FOUND)
-            request.data["department"] = Department.objects.get(id=int(department_id)).id
+            # request.data["department"] = Department.objects.get(id=int(department_id)).id
             serializer = EmployeeSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -109,7 +113,7 @@ class EmployeeAPIView(ModelViewSet):
             return Response(data={"Message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
-        employee_id = request.data.get("id")
+        employee_id = kwargs.get("pk")
         if not employee_id:
             return Response(data={"Message": "Employee not found"}, status=status.HTTP_404_NOT_FOUND)
         employee = Employee.objects.get(id=int(employee_id))
@@ -130,3 +134,8 @@ class EmployeeAPIView(ModelViewSet):
     #         return Response(data={"Message":"Employee not found"}, status=status.HTTP_404_NOT_FOUND)
     #     employee_obj.delete()
     #     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserAPIView(ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()

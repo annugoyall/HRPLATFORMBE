@@ -1,18 +1,20 @@
 # serializers.py
 
 from rest_framework import serializers
-from .models import Candidate, Department, Employee
+from .models import Candidate, Department, Employee, User
+
 
 class EmployeeSerializer(serializers.ModelSerializer):
     id = serializers.CharField(required=False)
     name = serializers.CharField()
+
     class Meta:
         model = Employee
         fields = '__all__'
 
 class EmployeeGetSerializer(serializers.ModelSerializer):
     id = serializers.CharField()
-    department = serializers.CharField()
+    department = serializers.CharField(required=False)
     class Meta:
         model = Employee
         fields = '__all__'
@@ -54,4 +56,9 @@ class CandidateGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Candidate
+        fields = '__all__'
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
         fields = '__all__'

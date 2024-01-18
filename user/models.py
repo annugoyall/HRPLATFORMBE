@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+
 from test_app.models import Test
+
+
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db import models
 
 class Department(models.Model):
     id = models.AutoField(primary_key=True)
@@ -36,3 +41,12 @@ class Candidate(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return str(self.id)
+
+class CustomUserManager(BaseUserManager):
+    use_in_migrations = True
+
+
+class User(AbstractUser):
+    password = models.CharField(max_length=128)
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=True, null=True)
+    candidate = models.ForeignKey(Candidate, on_delete=models.SET_NULL, blank=True, null=True)
