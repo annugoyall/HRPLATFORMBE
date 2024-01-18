@@ -24,8 +24,8 @@ class CandidateAPIView(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, *args, **kwargs):
-        candidate_id = kwargs.get("id")
+    def update(self, request, *args, **kwargs):
+        candidate_id = kwargs.get("pk")
         candidate = Candidate.objects.get(id=int(candidate_id))
         if not candidate:
             return Response(data={"Message": "Candidate not found"}, status=status.HTTP_404_NOT_FOUND)
