@@ -25,7 +25,7 @@ class CandidateAPIView(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, *args, **kwargs):
-        candidate_id = request.data.get("id")
+        candidate_id = kwargs.get("id")
         candidate = Candidate.objects.get(id=int(candidate_id))
         if not candidate:
             return Response(data={"Message": "Candidate not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -61,7 +61,7 @@ class DepartmentAPIView(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, *args, **kwargs):
-        department_id = request.data.get("id")
+        department_id = kwargs.get("pk")
         if not department_id:
             return Response(data={"Message": "Department id is required"}, status=status.HTTP_404_NOT_FOUND)
         department = Department.objects.get(id=department_id)
