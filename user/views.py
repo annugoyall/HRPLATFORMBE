@@ -154,3 +154,25 @@ class UserAPIView(ModelViewSet):
         user_obj.save()
         resp_data['candidate'] = candidate_obj.id
         return Response(resp_data, status=status.HTTP_201_CREATED, headers=headers)
+
+# file_api/views.py
+
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+import os
+
+@api_view(['GET'])
+def get_resume_by_id(request, candidate_id):
+    try:
+        candidate_obj = Candidate.objects.get(id=candidate_id)
+    except Candidate.DoesNotExist:
+        return Response({'Error': 'Candidate not found with id'}, status=status.HTTP_404_NOT_FOUND)
+    resume_file = candidate_obj.resume
+    if not resume_file:
+        return Response({'Error': 'Candidate not found with id'}, status=status.HTTP_404_NOT_FOUND)
+    file_path = resume_file.path
+    with open(file_path, encoding="utf8", errors='ignore') as file:
+        response = Response(file.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename="{file_path}"'
+        return response
