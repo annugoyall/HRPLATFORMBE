@@ -123,7 +123,7 @@ class TestResponseViewSet(ModelViewSet):
     def patch(self, request, *args, **kwargs):
         try:
             candidate = request.data.get("candidate")
-            questions = request.data.get("question")
+            questions = request.data.get("questions")
             correct_answers = 0
             for question in questions:
                 question_id = question.get("id")
