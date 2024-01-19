@@ -12,6 +12,9 @@ class Question(models.Model):
     correct_answer = models.TextField()
     other_dependencies = models.JSONField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['-created_at']
+
 class Test(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
