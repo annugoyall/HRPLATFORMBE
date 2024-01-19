@@ -17,6 +17,11 @@ class CandidateAPIView(ModelViewSet):
     serializer_class = CandidateSerializer
     queryset = Candidate.objects.all()
 
+    def retrieve(self, request, *args, **kwargs):
+        print("KASd")
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return CandidateGetSerializer
@@ -154,3 +159,25 @@ class UserAPIView(ModelViewSet):
         user_obj.save()
         resp_data['candidate'] = candidate_obj.id
         return Response(resp_data, status=status.HTTP_201_CREATED, headers=headers)
+
+# file_api/views.py
+
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+import os
+
+@api_view(['GET'])
+def get_resume_by_id(request, candidate_id):
+    try:
+        candidate_obj = Candidate.objects.get(id=candidate_id)
+    except Candidate.DoesNotExist:
+        return Response({'Error': 'Candidate not found with id'}, status=status.HTTP_404_NOT_FOUND)
+    resume_file = candidate_obj.resume
+    if not resume_file:
+        return Response({'Error': 'Resume not available'}, status=status.HTTP_404_NOT_FOUND)
+    file_path = resume_file.path
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+        return response
