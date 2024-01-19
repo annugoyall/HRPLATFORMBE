@@ -14,9 +14,10 @@ class ParseResumeView(APIView):
 
         for candidate in candidates:
             resume = candidate.resume
-            alignment_percentage = DepartmentWiseAlignment(resume)
-            length = min(len(alignment_percentage.items()), 3)
-            candidate_response = dict(sorted(alignment_percentage.items(), key=lambda item: item[1], reverse=True)[:length])
-            response[candidate.id] = candidate_response
+            if resume:
+                alignment_percentage = DepartmentWiseAlignment(resume)
+                length = min(len(alignment_percentage.items()), 3)
+                candidate_response = dict(sorted(alignment_percentage.items(), key=lambda item: item[1], reverse=True)[:length])
+                response[candidate.id] = candidate_response
 
         return Response(response, status=status.HTTP_200_OK)
