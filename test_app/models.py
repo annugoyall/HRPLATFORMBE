@@ -17,7 +17,7 @@ class Test(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     questions = models.ManyToManyField(Question, blank=True, related_name="tests")
-    status = models.CharField(choices=TEST_STATUS_CHOICES, max_length=10, default="Pending")
+    status = models.CharField(choices=TEST_STATUS_CHOICES, max_length=10, default="PENDING")
     conduced_on = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
