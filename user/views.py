@@ -17,11 +17,6 @@ class CandidateAPIView(ModelViewSet):
     serializer_class = CandidateSerializer
     queryset = Candidate.objects.all()
 
-    def retrieve(self, request, *args, **kwargs):
-        print("KASd")
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return CandidateGetSerializer
