@@ -1,2 +1,1 @@
-# HRPlatformBE
-Backend Repo
+# HRPLATFORMBE
